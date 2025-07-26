@@ -1,0 +1,38 @@
+
+#include <DHT.h>
+
+#define DHTPIN 2
+#define DHTTYPE DHT11 
+
+DHT dht(DHTPIN, DHTTYPE);//object 
+
+void setup() {
+  pinMode(13, OUTPUT); //FOR LED 
+  Serial.begin(9600); // speed of datatransfer
+  dht.begin(); //Initializes the DHT11 sensor.
+  delay(2000); // Give sensor time to initialize
+}
+
+void loop() {
+  if (Serial.available() > 0) {
+    String cmd = Serial.readStringUntil('\n');
+    cmd.trim();
+
+    if (cmd == "on") {
+      digitalWrite(13, HIGH);
+      Serial.println("LED ON");
+    } else if (cmd == "off") {
+      digitalWrite(13, LOW);
+      Serial.println("LED OFF");
+    } else if (cmd == "temp") {
+      float t = dht.readTemperature();
+      if (isnan(t)) { // returns NaN = Not a Number
+        Serial.println("Error");
+      } else {
+        Serial.println(t, 1); // Send temperature with 1 decimal place, e.g., "30.0"
+      }
+    } else {
+      Serial.println("Invalid cmd");
+    }
+  }
+}
